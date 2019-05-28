@@ -1,3 +1,3 @@
-# mtm_ppsw
+# mtm_pps
 
-MTM PPSW Code
+PPSW Code
