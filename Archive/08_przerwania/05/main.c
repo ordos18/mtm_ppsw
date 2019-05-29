@@ -44,7 +44,7 @@ int main (){
 	
 	LedInit();
 	KeyboardInit();
-	Timer0Interrupts_Init(250000, &Automat);
+	Timer1Interrupts_Init(250000, &Automat);
 
 	while(1){
 	 	iMainLoopCtr++;
