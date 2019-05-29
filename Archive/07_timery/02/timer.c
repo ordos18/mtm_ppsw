@@ -16,7 +16,7 @@ void WaitOnTimer0 (unsigned int uiTime) {
 	
 	T0TCR = T0TCR | COUNTER_RESET_bm; 												// reset Timera 0
 	T0TCR = T0TCR & ~COUNTER_RESET_bm; 												// wylaczenie resetu
-	while ((15*uiTime) != T0TC) {} 														// Oczekiwanie az Timer 0 osiagnie wartosc 15*uiTime
+	while ((15*uiTime) > T0TC) {} 														// Oczekiwanie az Timer 0 osiagnie wartosc 15*uiTime
 	return;
 }
 
