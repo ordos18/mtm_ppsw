@@ -1,5 +1,6 @@
 #include <LPC210X.H>
 #include "uart.h"
+#include "string.h"
 
 /************ UART ************/
 // U0LCR Line Control Register
@@ -91,26 +92,4 @@ void Receiver_GetStringCopy (char * ucDestination) {
 	
 	CopyString(sBuffer.cData, ucDestination);
 	sBuffer.eStatus = EMPTY;
-}
-
-void CopyString ( char pcSource[], char pcDestination[] ) {
-	
-	unsigned char ucCharCounter;
-	
-	for( ucCharCounter = 0; NULL != pcSource[ucCharCounter]; ucCharCounter++ ) {
-		pcDestination[ucCharCounter] = pcSource[ucCharCounter];
-	}
-	pcDestination[ucCharCounter] = NULL;
-}
-
-enum CompResult eCompareString ( char pcStr1[], char pcStr2[] ) {
-	
-	unsigned char ucCharCounter;
-	
-	for( ucCharCounter = 0; pcStr1[ucCharCounter] == pcStr2[ucCharCounter]; ucCharCounter++ ) {
-		if( NULL == pcStr1[ucCharCounter] ) {
-			return EQUAL;
-		}
-	}
-	return NOTEQUAL;
 }
