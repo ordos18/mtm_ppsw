@@ -5,7 +5,6 @@
 #include "string.h"
 #include "command_decoder.h"
 
-// test git
 
 /**********************************************/
 int main () {
