@@ -1,10 +1,12 @@
 #include <LPC21xx.H>
 #include "led.h"
 #include "timer_interrupts.h"
+#include "servo.h"
 
 #define DETECTOR_bm (1 << 10)
+#define FULL_ROTATION 48
 
-enum ServoState {CALLIB, IDLE, IN_PROGRESS};
+enum ServoState {IDLE, CALLIB, IN_PROGRESS};
 enum DetectorState {ACTIVE, INACTIVE};
 
 struct Servo {
@@ -59,8 +61,8 @@ void Automat (void) {
 			}
 			else {
 				sServo.eState = IDLE;
-				sServo.uiCurrentPosition = sServo.uiCurrentPosition % 200;
-				sServo.uiDesiredPosition = sServo.uiDesiredPosition % 200;
+				sServo.uiCurrentPosition = sServo.uiCurrentPosition % FULL_ROTATION;
+				sServo.uiDesiredPosition = sServo.uiDesiredPosition % FULL_ROTATION;
 			}
 			break;
 		default: {}
@@ -69,17 +71,25 @@ void Automat (void) {
 
 void ServoCalib (void) {
 	
+	while(sServo.eState != IDLE) {}
 	sServo.eState = CALLIB;
 }
 
 void ServoGoTo (unsigned int uiPosition) {
 	
+	while(sServo.eState != IDLE) {}
 	sServo.uiDesiredPosition = uiPosition;
+	sServo.eState = IN_PROGRESS;
 }
 
 void ServoMoveDegrees (unsigned int uiDegrees) {
 	
-	sServo.uiDesiredPosition = sServo.uiDesiredPosition + 200*uiDegrees/360;
+	sServo.uiDesiredPosition = sServo.uiDesiredPosition + FULL_ROTATION*uiDegrees/360;
+}
+
+void ServoMoveSteps (unsigned int uiSteps) {
+	
+	sServo.uiDesiredPosition = sServo.uiDesiredPosition + uiSteps;
 }
 
 void ServoInit (unsigned int uiServoFrequency) {

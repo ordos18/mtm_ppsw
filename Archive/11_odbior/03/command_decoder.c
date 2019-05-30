@@ -10,7 +10,8 @@ unsigned char ucTokenNr;
 struct Keyword asKeywordList[MAX_KEYWORD_NR] =
 {
 	{CAL,  "callib"},
-	{GOTO, "goto" }
+	{GOTO, "goto" },
+	{SHIFT, "shift" }
 };
 
 unsigned char ucFindTokensInString (char *pcString)

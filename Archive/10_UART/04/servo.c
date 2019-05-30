@@ -5,7 +5,7 @@
 #define DETECTOR_bm (1 << 10)
 #define FULL_ROTATION 48
 
-enum ServoState {CALLIB, IDLE, IN_PROGRESS};
+enum ServoState {IDLE, CALLIB, IN_PROGRESS};
 enum DetectorState {ACTIVE, INACTIVE};
 
 struct Servo {

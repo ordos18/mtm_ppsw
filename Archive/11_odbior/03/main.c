@@ -33,6 +33,11 @@ int main () {
 							ServoGoTo(asToken[1].uValue.uiNumber);
 						}
 						break;
+					case SHIFT:
+						if (ucTokenNr > 1) {
+							ServoMoveSteps(asToken[1].uValue.uiNumber);
+						}
+						break;
 					default: {}
 				}
 			}
