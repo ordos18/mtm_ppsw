@@ -7,7 +7,6 @@
 /**********************************************/
 int main () {
 	
-	unsigned int iMainLoopCtr;
 	extern char cOdebranyZnak;
 	
 	KeyboardInit();

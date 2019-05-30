@@ -1,10 +1,11 @@
 #include <LPC21xx.H>
 #include "led.h"
 #include "timer_interrupts.h"
+#include "servo.h"
 
 #define DETECTOR_bm (1 << 10)
 
-enum ServoState {CALLIB, IDLE, IN_PROGRESS};
+enum ServoState {IDLE, CALLIB, IN_PROGRESS};
 enum DetectorState {ACTIVE, INACTIVE};
 
 struct Servo {
@@ -67,12 +68,15 @@ void Automat (void) {
 
 void ServoCalib (void) {
 	
+	while(sServo.eState != IDLE) {}
 	sServo.eState = CALLIB;
 }
 
 void ServoGoTo (unsigned int uiPosition) {
 	
+	while(sServo.eState != IDLE) {}
 	sServo.uiDesiredPosition = uiPosition;
+	sServo.eState = IN_PROGRESS;
 }
 
 void ServoInit (unsigned int uiServoFrequency) {

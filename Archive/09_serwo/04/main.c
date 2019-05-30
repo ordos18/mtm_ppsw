@@ -6,10 +6,12 @@
 /**********************************************/
 int main () {
 	
-	unsigned int iMainLoopCtr;
-	
 	KeyboardInit();
 	ServoInit(50);
+	ServoGoTo(24);
+	ServoCalib();
+	ServoGoTo(12);
+	
 
 	while(1){
 	 	switch( eKeyboardRead() ) {

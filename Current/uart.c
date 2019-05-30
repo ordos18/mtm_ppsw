@@ -28,10 +28,22 @@
 #define mIRQ_SLOT_ENABLE                           0x00000020
 
 #define NULL '\0'
+#define TRANSMITER_SIZE 10
 
 ////////////// Zmienne globalne ////////////
 char cOdebranyZnak;
 struct ReceiverBuffer sBuffer;
+
+enum eTransmiterStatus {FREE, BUSY};
+
+typedef struct TransmitterBuffer {
+   char cData[TRANSMITER_SIZE];
+   enum eTransmiterStatus eStatus;
+   unsigned char fLastCharacter;
+   unsigned char cCharCtr;
+} TransmitterBuffer;
+
+struct TransmitterBuffer sTransmitterBuffer;
 
 ///////////////////////////////////////////
 __irq void UART0_Interrupt (void) {
@@ -92,4 +104,14 @@ void Receiver_GetStringCopy (char * ucDestination) {
 	
 	CopyString(sBuffer.cData, ucDestination);
 	sBuffer.eStatus = EMPTY;
+}
+
+char Transmiter_GetCharacterFromBuffer (void) {
+	
+	if (sTransmitterBuffer.eStatus == BUSY) {
+		sTransmitterBuffer.fLastCharacter = sTransmitterBuffer.cData[sTransmitterBuffer.cCharCtr];
+		return sTransmitterBuffer.fLastCharacter;
+	} else {
+		
+	}
 }
