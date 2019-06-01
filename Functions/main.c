@@ -343,13 +343,6 @@ void TestOf_AppendUIntToString (void)
 /*						DEKODOWANIE						*/
 /********************************************************/
 
-char cTokens1[] = "   ";
-char cTokens2[] = "token1 token2  token3";
-char cTokens3[] = "  store 0x1234  token3 ";
-char cToken1[] = "load";
-char cToken2[] = "reset ";
-char cToken3[] = "abc";
-
 #define MAX_TOKEN_NR 3 // maksymalna dopuszczalna ilosc tokenow
 #define MAX_KEYWORD_STRING_LTH 10 // maksymalna dlugosc komendy
 #define MAX_KEYWORD_NR 3
@@ -485,13 +478,29 @@ enum Result eStringToKeyword (char pcStr[], enum KeywordCode *peKeywordCode)
 
 void TestOf_eStringToKeyword (void)
 {
+    char cString1[] = "load";
+    enum Result eResult1;
+    enum KeywordCode eDestination1;
+    enum KeywordCode eExpected1 = LD;
 
+    char cString2[] = "abc";
+    enum Result eResult2;
+    enum KeywordCode eDestination2;
 
     printf("eStringToKeyword\n\n");
 
     printf("Test 1 - ");
+    // Test s這wa kluczowego
+    eResult1 = eStringToKeyword(cString1, &eDestination1);
+    if( (eDestination1 == eExpected1) &&
+        (OK == eResult1) ) printf("OK\n"); else printf("Error\n");
+
     printf("Test 2 - ");
-    printf("Test 3 - ");
+    // Test stringa spoza s堯w kluczowych
+    eResult2 = eStringToKeyword(cString2, &eDestination2);
+    if (ERROR == eResult2) printf("OK\n"); else printf("Error\n");
+
+    printf("\n\n");
 }
 
 void DecodeTokens (void)
@@ -514,13 +523,30 @@ void DecodeTokens (void)
 
 void TestOf_DecodeTokens (void)
 {
-
+    char cTokens1[] = "store  0x1234  token3";
+    char cTokens2[] = "reset";
 
     printf("DecodeTokens\n\n");
 
     printf("Test 1 - ");
+    // Test s這wa kluczowego, liczby i innego stringa
+    ucTokenNr = ucFindTokensInString(cTokens1);
+	ReplaceCharactersInString(cTokens1, ' ', NULL);
+	DecodeTokens();
+    if( (KEYWORD == asToken[0].eType) && (ST == asToken[0].uValue.eKeyword) &&
+        (NUMBER == asToken[1].eType) && (0x1234 == asToken[1].uValue.uiNumber) &&
+        (STRING == asToken[2].eType) && (EQUAL == eCompareString("token3", asToken[2].uValue.pcString)) ) printf("OK\n"); else printf("Error\n");
+
     printf("Test 2 - ");
-    printf("Test 3 - ");
+    // Test jednego s這wa kluczowego, sprawdzenie czy pozosta貫 pola nie zosta造 zmienione po poprzednim wywo豉niu
+    ucTokenNr = ucFindTokensInString(cTokens2);
+	ReplaceCharactersInString(cTokens2, ' ', NULL);
+	DecodeTokens();
+    if( (KEYWORD == asToken[0].eType) && (RST == asToken[0].uValue.eKeyword) &&
+        (NUMBER == asToken[1].eType) && (0x1234 == asToken[1].uValue.uiNumber) &&
+        (STRING == asToken[2].eType) && (EQUAL == eCompareString("token3", asToken[2].uValue.pcString)) ) printf("OK\n"); else printf("Error\n");
+
+    printf("\n\n");
 }
 
 void DecodeMsg (char *pcString)
@@ -533,74 +559,52 @@ void DecodeMsg (char *pcString)
 
 void TestOf_DecodeMsg (void)
 {
-
+    char cTokens1[] = "store  0x1234  token3";
+    char cTokens2[] = "reset";
 
     printf("DecodeMsg\n\n");
 
     printf("Test 1 - ");
+    // Test s這wa kluczowego, liczby i innego stringa
+    DecodeMsg(cTokens1);
+    if( (KEYWORD == asToken[0].eType) && (ST == asToken[0].uValue.eKeyword) &&
+        (NUMBER == asToken[1].eType) && (0x1234 == asToken[1].uValue.uiNumber) &&
+        (STRING == asToken[2].eType) && (EQUAL == eCompareString("token3", asToken[2].uValue.pcString)) ) printf("OK\n"); else printf("Error\n");
+
     printf("Test 2 - ");
-    printf("Test 3 - ");
+    // Test jednego s這wa kluczowego, sprawdzenie czy pozosta貫 pola nie zosta造 zmienione po poprzednim wywo豉niu
+    DecodeMsg(cTokens2);
+    if( (KEYWORD == asToken[0].eType) && (RST == asToken[0].uValue.eKeyword) &&
+        (NUMBER == asToken[1].eType) && (0x1234 == asToken[1].uValue.uiNumber) &&
+        (STRING == asToken[2].eType) && (EQUAL == eCompareString("token3", asToken[2].uValue.pcString)) ) printf("OK\n"); else printf("Error\n");
+
+    printf("\n\n");
 }
 
 
 int main (void)
 {
+	printf("TESTY FUNKCJI DO OPERACJI NA STRINGACH \n\n\n");
 
-	//CopyString(cSource, cDestination);
-	//UIntToHexStr(uiValue, cStr);
-	//res = eHexStringToUInt(cStr, &uiValue);
-	//AppendUIntToString(uiValue, cStr);
-
-	/*
-	// Tokeny 1&3
-	unsigned char cnt1, cnt2, cnt3;
-
-	cnt1 = ucFindTokensInString(cTokens1);
-	DecodeTokens();
-	cnt2 = ucFindTokensInString(cTokens2);
-	DecodeTokens();
-	cnt3 = ucFindTokensInString(cTokens3);
-	DecodeTokens();
-	*/
-
-	/*
-	// Tokeny 2
-	enum Result Res;
-	enum KeywordCode Code;
-	Res = eStringToKeyword(cToken1, &Code);
-	Res = eStringToKeyword(cToken2, &Code);
-	Res = eStringToKeyword(cToken3, &Code);
-	*/
-
-	/*
-	// Tokeny 4
-	DecodeMsg(cTokens1);
-	DecodeMsg(cTokens2);
-	DecodeMsg(cTokens3);
-	*/
-
-	//printf("TESTY FUNKCJI DO OPERACJI NA STRINGACH \n\n\n");
-
-	//TestOf_eCompareString();
-	//TestOf_CopyString();
-	//TestOf_AppendString();
-	//TestOf_ReplaceCharactersInString();
+	TestOf_eCompareString();
+	TestOf_CopyString();
+	TestOf_AppendString();
+	TestOf_ReplaceCharactersInString();
 
 
-	//printf("TESTY FUNKCJI DO KONWERSJI STRING紟 \n\n\n");
+	printf("TESTY FUNKCJI DO KONWERSJI STRING紟 \n\n\n");
 
-	//TestOf_UIntToHexStr();
-	//TestOf_eHexStringToUInt();
-	//TestOf_AppendUIntToString();
+	TestOf_UIntToHexStr();
+	TestOf_eHexStringToUInt();
+	TestOf_AppendUIntToString();
 
 
 
 	printf("TESTY FUNKCJI DO DEKODOWANIA KOMUNIKAT紟 \n\n\n");
 
 	TestOf_ucFindTokensInString();
-	//TestOf_eStringToKeyword();
-	//TestOf_DecodeTokens();
-	//TestOf_DecodeMsg();
-
+	TestOf_eStringToKeyword();
+	TestOf_DecodeTokens();
+	TestOf_DecodeMsg();
 
 }
