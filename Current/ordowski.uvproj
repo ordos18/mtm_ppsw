@@ -442,6 +442,11 @@
               <FileType>1</FileType>
               <FilePath>.\command_decoder.c</FilePath>
             </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\adc.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
