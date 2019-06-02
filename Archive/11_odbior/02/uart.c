@@ -72,7 +72,7 @@ void Receiver_PutCharacterToBuffer (char cCharacter) {
 	
 	if( sBuffer.ucCharCtr + 1 > RECEIVER_SIZE ) {
 		sBuffer.eStatus = OVERFLOW;
-	} else if ('\t' == cCharacter) {
+	} else if ('\r' == cCharacter) {
 		sBuffer.cData[sBuffer.ucCharCtr] = NULL;
 		sBuffer.eStatus = READY;
 		sBuffer.ucCharCtr = 0;
