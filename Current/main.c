@@ -6,6 +6,7 @@
 #include "command_decoder.h"
 #include "timer.h"
 #include "timer_interrupts.h"
+#include "adc.h"
 
 
 /**********************************************/
@@ -27,10 +28,12 @@ int main () {
 	KeyboardInit();
 	ServoInit(50);
 	InitTimer0();
-	Timer0Interrupts_Init(1000000, &WatchUpdate);
-	UART_InitWithInt(9600);
+	Timer1Interrupts_Init(100000, &ADC_ReadValue);
+	//UART_InitWithInt(9600);
+	ADC_InitWithInt(&ServoGoTo);
 
 	while (1) {
+		/*
 		if( eReceiver_GetStatus() == READY ) {
 			Receiver_GetStringCopy(RxString);
 			DecodeMsg(RxString);
@@ -73,5 +76,6 @@ int main () {
 				Transmitter_SendString(cStringToSend);
 			}
 		}
+		*/
 	}
 }

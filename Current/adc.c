@@ -8,38 +8,49 @@
 #define ADC_ENABLE_bm	(1 << 21)
 #define ADC_START_bm	(1 << 24)
 #define ADC_DONE_bm		(1 << 31)
-#define ADC_LSB_bm 		6
+#define ADC_LSB 		 6
+
+
+void (*ptrADCInterruptFunction)(unsigned int uiPosition);
 
 ///////////////////////////////////////////
 __irq void ADC_Interrupt (void) {
 	// jesli przerwanie z ADC
+	unsigned int uiValueADC;
+	static unsigned int uiADC_min = 0x1FF, uiADC_max = 0x1FF;
 	
+	uiValueADC = (ADDR >> ADC_LSB) & 0x3FF;
+	
+	// ADC min/max calibrate
+	if (uiValueADC < uiADC_min) {
+		uiADC_min = uiValueADC;
+	}
+	if (uiValueADC > uiADC_max) {
+		uiADC_max = uiValueADC;
+	}
+	
+	ptrADCInterruptFunction( (uiValueADC-uiADC_min) * 48 / (uiADC_max - uiADC_min) );
 	
 	
 	VICVectAddr = 0; // Acknowledge Interrupt
 }
 
 ////////////////////////////////////////////
-void ADC_InitWithInt(unsigned int uiBaudRate){
+void ADC_InitWithInt (void (*ptrInterruptFunction)(unsigned int uiPosition)) {
 
+	ptrADCInterruptFunction = ptrInterruptFunction;
+	
 	// ADC
-	PINSEL1 = PINSEL1 | mADC_AIN0;								// ustawic pina na odbiornik uart0
+	PINSEL1 = PINSEL1 | mADC_AIN0;								// ustawic pin na ADC
 	ADCR = ADCR | ADC_ENABLE_bm;
 	
 	// INT
 	VICVectAddr7  = (unsigned long) ADC_Interrupt;
 	VICVectCntl7  = mIRQ_SLOT_ENABLE | VIC_ADC_CHANNEL_NR;
 	VICIntEnable |= (0x1 << VIC_ADC_CHANNEL_NR);
-	/*
-   U0LCR  |= m8BIT_UART_WORD_LENGTH | mDIVISOR_LATCH_ACCES_BIT; // dlugosc slowa, DLAB = 1
-   U0DLL   = ((15000000)/16)/uiBaudRate;                        // predkosc transmisji
-   U0LCR  &= (~mDIVISOR_LATCH_ACCES_BIT);                       // DLAB = 0
-   U0IER  |= mRX_DATA_AVALIABLE_INTERRUPT_ENABLE;               // aktywacja przerwan po odebraniu danych (RDA)
-   U0IER  |= mTHRE_INTERRUPT_PENDING;            			    // aktywacja przerwan po wyslaniu danych (THRE)
+}
 
-   // INT
-   VICVectAddr1  = (unsigned long) UART0_Interrupt;             // set interrupt service routine address
-   VICVectCntl1  = mIRQ_SLOT_ENABLE | VIC_UART0_CHANNEL_NR;     // use it for UART 0 Interrupt
-   VICIntEnable |= (0x1 << VIC_UART0_CHANNEL_NR);               // Enable UART 0 Interrupt Channel
-	*/
+void ADC_ReadValue (void) {
+	
+	ADCR = ADCR | ADC_START_bm;
 }
