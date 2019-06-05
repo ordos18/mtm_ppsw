@@ -40,7 +40,6 @@ void TestOf_eCompareString (void)
 
 void CopyString ( char pcSource[], char pcDestination[] )
 {
-
 	unsigned char ucCharCounter;
 
 	for( ucCharCounter = 0; NULL != pcSource[ucCharCounter]; ucCharCounter++ ) {
@@ -70,7 +69,6 @@ void TestOf_CopyString (void)
 
 void AppendString ( char pcSourceStr[], char pcDestinationStr[] )
 {
-
 	unsigned char ucDestinationEnd;
 
 	for( ucDestinationEnd = 0; NULL != pcDestinationStr[ucDestinationEnd]; ucDestinationEnd++ ) {}
@@ -106,7 +104,6 @@ void TestOf_AppendString (void)
 
 void ReplaceCharactersInString ( char pcString[], char cOldChar, char cNewChar )
 {
-
 	unsigned char ucCharCounter;
 
 	for( ucCharCounter = 0; NULL != pcString[ucCharCounter]; ucCharCounter++ ) {
@@ -117,49 +114,34 @@ void ReplaceCharactersInString ( char pcString[], char cOldChar, char cNewChar )
 }
 
 void TestOf_ReplaceCharactersInString (void)
-{ //TODO
-    char cString[] = "33_33_33";
-    char cOldChar1 = '3';
-    char cNewChar1 = 'x';
-    char cExpected1[] = "xx_xx_xx";
-
-    char cString2[] = "53_33_33";
-    char cOldChar2 = '3';
-    char cNewChar2 = NULL;
-    char cExpected2[] = "5";
-
-    char cString3[] = "012";
-    char cOldChar3 = '3';
-    char cNewChar3 = 'x';
-    char cExpected3[] = "012";
-
-    char cString4[] = "";
-    char cOldChar4 = '3';
-    char cNewChar4 = 'x';
-    char cExpected4[] = "";
+{
+    char cString[10];
 
     printf("ReplaceCharactersInString\n\n");
 
     printf("Test 1 - ");
-    // Test zamiany wielu znaków stringa na inny znak
+    // Wiecej niz jeden znak
 	CopyString("33_33_33", cString);
     ReplaceCharactersInString(cString, '3', 'x');
-    if (EQUAL == eCompareString(cExpected1, cString1)) printf("OK\n"); else printf("Error\n");
+    if (EQUAL == eCompareString("xx_xx_xx", cString)) printf("OK\n"); else printf("Error\n");
 
     printf("Test 2 - ");
-    // Test zamiany znaku stringa na NULL
-    ReplaceCharactersInString(cString2, cOldChar2, 'x');
-    if (EQUAL == eCompareString(cExpected2, cString2)) printf("OK\n"); else printf("Error\n");
+    // Zamiana na NULL
+	CopyString("53_33_33", cString);
+    ReplaceCharactersInString(cString, '3', NULL);
+    if (EQUAL == eCompareString("5", cString)) printf("OK\n"); else printf("Error\n");
 
     printf("Test 3 - ");
-    // Test zamiany znaku w stringu niezawieraj¹cym tego znaku
-    ReplaceCharactersInString(cString3, cOldChar3, 'x');
-    if (EQUAL == eCompareString(cExpected3, cString3)) printf("OK\n"); else printf("Error\n");
+    // String niezawierajacy szukanego znaku
+	CopyString("012", cString);
+    ReplaceCharactersInString(cString, '3', 'x');
+    if (EQUAL == eCompareString("012", cString)) printf("OK\n"); else printf("Error\n");
 
     printf("Test 4 - ");
-    // Test zamiany znaku w pustym stringu
-    ReplaceCharactersInString(cString4, cOldChar4, 'x');
-    if (EQUAL == eCompareString(cExpected4, cString4)) printf("OK\n"); else printf("Error\n");
+    // Pusty string
+	CopyString("", cString);
+    ReplaceCharactersInString(cString, '3', 'x');
+    if (EQUAL == eCompareString("", cString)) printf("OK\n"); else printf("Error\n");
 
     printf("\n\n");
 }
@@ -172,7 +154,6 @@ enum Result {OK, ERROR};
 
 void UIntToHexStr ( unsigned int uiValue, char pcStr[] )
 {
-
 	unsigned char ucNibbleCounter, ucNibble;
 
 	pcStr[0] = '0';
@@ -190,41 +171,30 @@ void UIntToHexStr ( unsigned int uiValue, char pcStr[] )
 
 void TestOf_UIntToHexStr (void)
 {
-    unsigned int uiValue1 = 0;
-    char cDestination1[7];
-    char cResult1[] = "0x0000";
-
-    unsigned int uiValue2 = 10;
-    char cDestination2[7];
-    char cResult2[] = "0x000A";
-
-    unsigned int uiValue3 = 65535;
-    char cDestination3[7];
-    char cResult3[] = "0xFFFF";
+    char cDestination[7];
 
     printf("UIntToHexStr\n\n");
 
     printf("Test 1 - ");
-    // Test zamiany najmniejszej wartoœci - 0 - 0x0000
-    UIntToHexStr(uiValue1, cDestination1);
-    if (EQUAL == eCompareString(cResult1, cDestination1)) printf("OK\n"); else printf("Error\n");
+    // 0 - 0x0000
+    UIntToHexStr(0, cDestination);
+    if (EQUAL == eCompareString("0x0000", cDestination)) printf("OK\n"); else printf("Error\n");
 
     printf("Test 2 - ");
-    // Test zamiany wartoœci niebrzegowej - 10 - 0x000A
-    UIntToHexStr(uiValue2, cDestination2);
-    if (EQUAL == eCompareString(cResult2, cDestination2)) printf("OK\n"); else printf("Error\n");
+    // 2479 - 0x09AF
+    UIntToHexStr(2479, cDestination);
+    if (EQUAL == eCompareString("0x09AF", cDestination)) printf("OK\n"); else printf("Error\n");
 
     printf("Test 3 - ");
-    // Test zamiany najwiêkszej wartoœci - 65535 - 0xFFFF
-    UIntToHexStr(uiValue3, cDestination3);
-    if (EQUAL == eCompareString(cResult3, cDestination3)) printf("OK\n"); else printf("Error\n");
+    // 65535 - 0xFFFF
+    UIntToHexStr(65535, cDestination);
+    if (EQUAL == eCompareString("0xFFFF", cDestination)) printf("OK\n"); else printf("Error\n");
 
     printf("\n\n");
 }
 
 enum Result eHexStringToUInt ( char pcStr[], unsigned int *puiValue)
 {
-
 	unsigned char ucCharacterIterator;
 	char cCharacter;
 
@@ -247,44 +217,31 @@ enum Result eHexStringToUInt ( char pcStr[], unsigned int *puiValue)
 
 void TestOf_eHexStringToUInt (void)
 {
-    char uiValue1[] = "0x0000";
-    unsigned int cDestination1;
-    unsigned int cExpected1 = 0;
-    enum Result Result1;
-
-    char uiValue2[] = "0x000A";
-    unsigned int cDestination2;
-    unsigned int cExpected2 = 10;
-    enum Result Result2;
-
-    char uiValue3[] = "0xFFFF";
-    unsigned int cDestination3;
-    unsigned int cExpected3 = 65535;
-    enum Result Result3;
+    unsigned int cDestination;
+    enum Result Result;
 
     printf("eHexStringToUInt\n\n");
 
     printf("Test 1 - ");
-    // Test zamiany najmniejszej wartoœci - 0x0000 - 0
-    Result1 = eHexStringToUInt(uiValue1, &cDestination1);
-    if( (OK == Result1) && (cExpected1 == cDestination1) ) printf("OK\n"); else printf("Error\n");
+    // 0x0000 - 0
+    Result = eHexStringToUInt("0x0000", &cDestination);
+    if( (OK == Result) && (0 == cDestination) ) printf("OK\n"); else printf("Error\n");
 
     printf("Test 2 - ");
-    // Test zamiany wartoœci niebrzegowej - 0x000A - 10
-    Result2 = eHexStringToUInt(uiValue2, &cDestination2);
-    if( (OK == Result2) && (cExpected2 == cDestination2) ) printf("OK\n"); else printf("Error\n");
+    // 0x09AF - 2479
+    Result = eHexStringToUInt("0x09AF", &cDestination);
+    if( (OK == Result) && (2479 == cDestination) ) printf("OK\n"); else printf("Error\n");
 
     printf("Test 3 - ");
-    // Test zamiany najwiêkszej wartoœci - 0xFFFF - 65535
-    Result3 = eHexStringToUInt(uiValue3, &cDestination3);
-    if( (OK == Result3) && (cExpected3 == cDestination3) ) printf("OK\n"); else printf("Error\n");
+    // \0xFFFF - 65535
+    Result = eHexStringToUInt("0xFFFF", &cDestination);
+    if( (OK == Result) && (65535 == cDestination) ) printf("OK\n"); else printf("Error\n");
 
     printf("\n\n");
 }
 
 void AppendUIntToString ( unsigned int uiValue, char pcDestinationStr[] )
 {
-
 	unsigned char ucDestinationEnd;
 
 	for( ucDestinationEnd = 0; pcDestinationStr[ucDestinationEnd] != NULL; ucDestinationEnd++ ) {}
@@ -293,25 +250,21 @@ void AppendUIntToString ( unsigned int uiValue, char pcDestinationStr[] )
 
 void TestOf_AppendUIntToString (void)
 {
-    unsigned int uiValue1 = 10;
-    char cDestination1[10] = "";
-    char cResult1[] = "0x000A";
-
-    unsigned int uiValue2 = 10;
-    char cDestination2[10] = "MO";
-    char cResult2[] = "MO0x000A";
+    char cDestination[10];
 
     printf("AppendUIntToString\n\n");
 
     printf("Test 1 - ");
-    // Test dopisania do pustego stringa
-    AppendUIntToString(uiValue1, cDestination1);
-    if (EQUAL == eCompareString(cResult1, cDestination1)) printf("OK\n"); else printf("Error\n");
+    // Pusty string + 0x000A
+    CopyString("", cDestination);
+    AppendUIntToString(10, cDestination);
+    if (EQUAL == eCompareString("0x000A", cDestination)) printf("OK\n"); else printf("Error\n");
 
     printf("Test 2 - ");
-    // Test dopisania do niepustego stringa
-    AppendUIntToString(uiValue2, cDestination2);
-    if (EQUAL == eCompareString(cResult2, cDestination2)) printf("OK\n"); else printf("Error\n");
+    // Niepusty string + 0x000A
+    CopyString("MO ", cDestination);
+    AppendUIntToString(10, cDestination);
+    if (EQUAL == eCompareString("MO 0x000A", cDestination)) printf("OK\n"); else printf("Error\n");
 
     printf("\n\n");
 }
@@ -396,44 +349,29 @@ unsigned char ucFindTokensInString (char *pcString)
 
 void TestOf_ucFindTokensInString (void)
 {
-    char cTokens1[] = "   ";
-    unsigned char ucCount1;
-    unsigned char ucExpectedCount1 = 0;
-
-    char cTokens2[] = "token1  token2";
-    unsigned char ucCount2;
-    unsigned char ucExpectedCount2 = 2;
-    char cToken2_1[] = "token1  token2";
-    char cToken2_2[] = "token2";
-
-    char cTokens3[] = "  store  0x1234  token3 token 4  ";
-    unsigned char ucCount3;
-    unsigned char ucExpectedCount3 = 3;
-    char cToken3_1[] = "store  0x1234  token3 token 4  ";
-    char cToken3_2[] = "0x1234  token3 token 4  ";
-    char cToken3_3[] = "token3 token 4  ";
+    unsigned char ucTokensCount;\
 
     printf("ucFindTokensInString\n\n");
 
     printf("Test 1 - ");
-    // Test pustego stringa
-    ucCount1 = ucFindTokensInString(cTokens1);
-    if (ucCount1 == ucExpectedCount1) printf("OK\n"); else printf("Error\n");
+    // Pusty string
+    ucTokensCount = ucFindTokensInString("   ");
+    if (0 == ucTokensCount) printf("OK\n"); else printf("Error\n");
 
     printf("Test 2 - ");
-    // Test dwóch tokenów z kilkoma delimiterami pomiêdzy nimi
-    ucCount2 = ucFindTokensInString(cTokens2);
-    if( (ucCount2 == ucExpectedCount2) &&
-        (EQUAL == eCompareString(asToken[0].uValue.pcString, cToken2_1)) &&
-        (EQUAL == eCompareString(asToken[1].uValue.pcString, cToken2_2)) ) printf("OK\n"); else printf("Error\n");
+    // Dwa tokeny, kilka delimiterow
+    ucTokensCount = ucFindTokensInString("token1  token2");
+    if( (2 == ucTokensCount) &&
+        (EQUAL == eCompareString(asToken[0].uValue.pcString, "token1  token2")) &&
+        (EQUAL == eCompareString(asToken[1].uValue.pcString, "token2")) ) printf("OK\n"); else printf("Error\n");
 
     printf("Test 3 - ");
-    // Test czterech tokenów z kilkoma delimiterami na pocz¹tku, koñcu i pomiêdzy nimi
-    ucCount3 = ucFindTokensInString(cTokens3);
-    if( (ucCount3 == ucExpectedCount3) &&
-        (EQUAL == eCompareString(asToken[0].uValue.pcString, cToken3_1)) &&
-        (EQUAL == eCompareString(asToken[1].uValue.pcString, cToken3_2)) &&
-        (EQUAL == eCompareString(asToken[2].uValue.pcString, cToken3_3)) ) printf("OK\n"); else printf("Error\n");
+    // Ilosc tokenow ponad limit - slowo kluczowe, liczba hex, string, wielokrotne delimitery na poczatku, pomiedzy i na koncu
+    ucTokensCount= ucFindTokensInString("  store  0x1234  token3 token4  ");
+    if( (3 == ucTokensCount) &&
+        (EQUAL == eCompareString(asToken[0].uValue.pcString, "store  0x1234  token3 token4  ")) &&
+        (EQUAL == eCompareString(asToken[1].uValue.pcString, "0x1234  token3 token4  ")) &&
+        (EQUAL == eCompareString(asToken[2].uValue.pcString, "token3 token4  ")) ) printf("OK\n"); else printf("Error\n");
 
     printf("\n\n");
 }
@@ -455,27 +393,21 @@ enum Result eStringToKeyword (char pcStr[], enum KeywordCode *peKeywordCode)
 
 void TestOf_eStringToKeyword (void)
 {
-    char cString1[] = "load";
-    enum Result eResult1;
-    enum KeywordCode eDestination1;
-    enum KeywordCode eExpected1 = LD;
-
-    char cString2[] = "abc";
-    enum Result eResult2;
-    enum KeywordCode eDestination2;
+    enum Result eResult;
+    enum KeywordCode eKeywordCode;
 
     printf("eStringToKeyword\n\n");
 
     printf("Test 1 - ");
-    // Test s³owa kluczowego
-    eResult1 = eStringToKeyword(cString1, &eDestination1);
-    if( (eDestination1 == eExpected1) &&
-        (OK == eResult1) ) printf("OK\n"); else printf("Error\n");
+    // Slowo kluczowe
+    eResult = eStringToKeyword("load", &eKeywordCode);
+    if( (eKeywordCode == LD) &&
+        (OK == eResult) ) printf("OK\n"); else printf("Error\n");
 
     printf("Test 2 - ");
-    // Test stringa spoza s³ów kluczowych
-    eResult2 = eStringToKeyword(cString2, &eDestination2);
-    if (ERROR == eResult2) printf("OK\n"); else printf("Error\n");
+    // String spoza slow kluczowych
+    eResult = eStringToKeyword("abc", &eKeywordCode);
+    if (ERROR == eResult) printf("OK\n"); else printf("Error\n");
 
     printf("\n\n");
 }
@@ -500,28 +432,30 @@ void DecodeTokens (void)
 
 void TestOf_DecodeTokens (void)
 {
-    char cTokens1[] = "store  0x1234  token3";
-    char cTokens2[] = "reset";
+    char cTokens[30];
 
     printf("DecodeTokens\n\n");
 
     printf("Test 1 - ");
-    // Test s³owa kluczowego, liczby i innego stringa
-    ucTokenNr = ucFindTokensInString(cTokens1);
-	ReplaceCharactersInString(cTokens1, ' ', NULL);
+    // S³owo kluczowe, liczba i inny string
+    CopyString("store  0x1234  token3", cTokens);
+    ucTokenNr = ucFindTokensInString(cTokens);
+	ReplaceCharactersInString(cTokens, ' ', NULL);
 	DecodeTokens();
     if( (KEYWORD == asToken[0].eType) && (ST == asToken[0].uValue.eKeyword) &&
         (NUMBER == asToken[1].eType) && (0x1234 == asToken[1].uValue.uiNumber) &&
         (STRING == asToken[2].eType) && (EQUAL == eCompareString("token3", asToken[2].uValue.pcString)) ) printf("OK\n"); else printf("Error\n");
 
     printf("Test 2 - ");
-    // Test jednego s³owa kluczowego, sprawdzenie czy pozosta³e pola nie zosta³y zmienione po poprzednim wywo³aniu
-    ucTokenNr = ucFindTokensInString(cTokens2);
-	ReplaceCharactersInString(cTokens2, ' ', NULL);
+    // Jedno slowo kluczowe, sprawdzenie pozostalych pol
+    CopyString("reset", cTokens);
+    ucTokenNr = ucFindTokensInString(cTokens);
+	ReplaceCharactersInString(cTokens, ' ', NULL);
 	DecodeTokens();
     if( (KEYWORD == asToken[0].eType) && (RST == asToken[0].uValue.eKeyword) &&
         (NUMBER == asToken[1].eType) && (0x1234 == asToken[1].uValue.uiNumber) &&
-        (STRING == asToken[2].eType) && (EQUAL == eCompareString("token3", asToken[2].uValue.pcString)) ) printf("OK\n"); else printf("Error\n");
+        (STRING == asToken[2].eType) && (EQUAL == eCompareString("token3", asToken[2].uValue.pcString))
+        ) printf("OK\n"); else printf("Error\n");
 
     printf("\n\n");
 }
@@ -536,21 +470,22 @@ void DecodeMsg (char *pcString)
 
 void TestOf_DecodeMsg (void)
 {
-    char cTokens1[] = "store  0x1234  token3";
-    char cTokens2[] = "reset";
+    char cTokens[30];
 
     printf("DecodeMsg\n\n");
 
     printf("Test 1 - ");
-    // Test s³owa kluczowego, liczby i innego stringa
-    DecodeMsg(cTokens1);
+    // S³owo kluczowe, liczba i inny string
+    CopyString("store  0x1234  token3", cTokens);
+    DecodeMsg(cTokens);
     if( (KEYWORD == asToken[0].eType) && (ST == asToken[0].uValue.eKeyword) &&
         (NUMBER == asToken[1].eType) && (0x1234 == asToken[1].uValue.uiNumber) &&
         (STRING == asToken[2].eType) && (EQUAL == eCompareString("token3", asToken[2].uValue.pcString)) ) printf("OK\n"); else printf("Error\n");
 
     printf("Test 2 - ");
-    // Test jednego s³owa kluczowego, sprawdzenie czy pozosta³e pola nie zosta³y zmienione po poprzednim wywo³aniu
-    DecodeMsg(cTokens2);
+    // Jedno slowo kluczowe, sprawdzenie pozostalych pol
+    CopyString("reset", cTokens);
+    DecodeMsg(cTokens);
     if( (KEYWORD == asToken[0].eType) && (RST == asToken[0].uValue.eKeyword) &&
         (NUMBER == asToken[1].eType) && (0x1234 == asToken[1].uValue.uiNumber) &&
         (STRING == asToken[2].eType) && (EQUAL == eCompareString("token3", asToken[2].uValue.pcString)) ) printf("OK\n"); else printf("Error\n");
@@ -569,7 +504,7 @@ int main (void)
 	TestOf_ReplaceCharactersInString();
 
 
-	printf("TESTY FUNKCJI DO KONWERSJI STRINGÓW \n\n\n");
+	printf("TESTY FUNKCJI DO KONWERSJI STRINGOW \n\n\n");
 
 	TestOf_UIntToHexStr();
 	TestOf_eHexStringToUInt();
@@ -577,7 +512,7 @@ int main (void)
 
 
 
-	printf("TESTY FUNKCJI DO DEKODOWANIA KOMUNIKATÓW \n\n\n");
+	printf("TESTY FUNKCJI DO DEKODOWANIA KOMUNIKATOW \n\n\n");
 
 	TestOf_ucFindTokensInString();
 	TestOf_eStringToKeyword();
