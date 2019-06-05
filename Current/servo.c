@@ -2,6 +2,7 @@
 #include "servo.h"
 #include "led.h"
 #include "timer_interrupts.h"
+#include "adc.h"
 
 #define DETECTOR_bm (1 << 10)
 
@@ -87,5 +88,5 @@ void ServoInit (unsigned int uiServoFrequency) {
 	
 	ServoCalib();
 	LedInit();
-	Timer0Interrupts_Init( (1000000 / uiServoFrequency), &Automat );
+	Timer0Interrupts_Init( (1000000 / uiServoFrequency), &ADC_ReadValue, &Automat );
 }

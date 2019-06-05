@@ -19,7 +19,8 @@
 
 struct Watch sWatch;
 
-void (*ptrTimer0InterruptFunction)(void);
+void (*ptrTimer0InterruptFunction1)(void);
+void (*ptrTimer0InterruptFunction2)(void);
 void (*ptrTimer1InterruptFunction)(void);
 
 /**********************************************/
@@ -27,7 +28,8 @@ void (*ptrTimer1InterruptFunction)(void);
 __irq void Timer0IRQHandler(void){
 
 	T0IR=mMR0_INTERRUPT; 	// skasowanie flagi przerwania 
-	ptrTimer0InterruptFunction();		// cos do roboty
+	ptrTimer0InterruptFunction1();		// cos do roboty
+	ptrTimer0InterruptFunction2();
 	VICVectAddr=0x00; 	// potwierdzenie wykonania procedury obslugi przerwania
 }
 
@@ -39,9 +41,10 @@ __irq void Timer1IRQHandler(void){
 	VICVectAddr=0x00; 	// potwierdzenie wykonania procedury obslugi przerwania
 }
 /**********************************************/
-void Timer0Interrupts_Init(unsigned int uiPeriod, void (*ptrInterruptFunction)(void)){ // microseconds
+void Timer0Interrupts_Init(unsigned int uiPeriod, void (*ptrInterruptFunction1)(void), void (*ptrInterruptFunction2)(void)){ // microseconds
 	
-	ptrTimer0InterruptFunction = ptrInterruptFunction;
+	ptrTimer0InterruptFunction1 = ptrInterruptFunction1;
+	ptrTimer0InterruptFunction2 = ptrInterruptFunction2;
 	
         // interrupts
 
@@ -60,7 +63,7 @@ void Timer0Interrupts_Init(unsigned int uiPeriod, void (*ptrInterruptFunction)(v
 
 }
 
-void Timer1Interrupts_Init(unsigned int uiPeriod, void (*ptrInterruptFunction)(void)){ // microseconds
+void Timer1Interrupts_Init(unsigned int uiPeriod, void (*ptrInterruptFunction)(void)) { // microseconds
 	
 	ptrTimer1InterruptFunction = ptrInterruptFunction;
 	

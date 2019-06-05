@@ -11,7 +11,8 @@ struct Keyword asKeywordList[MAX_KEYWORD_NR] =
 {
 	{CAL,  "callib"},
 	{GOTO, "goto"  },
-	{CALC, "calc"  }
+	{CALC, "calc"  },
+	{ID,	 "id"		 }
 };
 
 unsigned char ucFindTokensInString (char *pcString)

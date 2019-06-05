@@ -21,28 +21,19 @@ enum CompResult eCompareString ( char pcStr1[], char pcStr2[] )
 
 void TestOf_eCompareString (void)
 {
-    char cStringA1[] = "012345";
-    char cStringA2[] = "012345";
-
-    char cStringB1[] = "012345";
-    char cStringB2[] = "012_4";
-
-    char cStringC1[] = "";
-    char cStringC2[] = "";
-
     printf("eCompareString\n\n");
 
     printf("Test 1 - ");
-    // Test porównania takich samych stringów
-    if (EQUAL == eCompareString(cStringA1, cStringA2)) printf("OK\n"); else printf("Error\n");
+    // Takie same stringi
+    if (EQUAL == eCompareString("012345", "012345")) printf("OK\n"); else printf("Error\n");
 
     printf("Test 2 - ");
-    // Test porównania ró¿nych stringów
-    if (NOTEQUAL == eCompareString(cStringB1, cStringB2)) printf("OK\n"); else printf("Error\n");
+    // Rozne stringi
+    if (NOTEQUAL == eCompareString("012345", "012_4")) printf("OK\n"); else printf("Error\n");
 
     printf("Test 3 - ");
-    // Test porównania pustych stringów
-    if (EQUAL == eCompareString(cStringC1, cStringC2)) printf("OK\n"); else printf("Error\n");
+    // Puste stringi
+    if (EQUAL == eCompareString("", "")) printf("OK\n"); else printf("Error\n");
 
     printf("\n\n");
 }
@@ -60,27 +51,19 @@ void CopyString ( char pcSource[], char pcDestination[] )
 
 void TestOf_CopyString (void)
 {
-    char cSource1[] = "01234";
-    char cSource2[] = "abc";
-    char cSource3[] = "";
-    char cDestination[] = "56789";
+    char cDestination[10];
 
     printf("CopyString\n\n");
 
     printf("Test 1 - ");
-    // Test kopiowania stringa do tablicy zawieraj¹cej innego stringa o tej samej d³ugoœci
-    CopyString(cSource1, cDestination);
-    if (EQUAL == eCompareString(cSource1, cDestination)) printf("OK\n"); else printf("Error\n");
+    // Niepusty string
+    CopyString("01234", cDestination);
+    if (EQUAL == eCompareString("01234", cDestination)) printf("OK\n"); else printf("Error\n");
 
     printf("Test 2 - ");
-    // Test kopiowania stringa do tablicy zawieraj¹cej innego stringa o wiêkszej d³ugoœci
-    CopyString(cSource2, cDestination);
-    if (EQUAL == eCompareString(cSource2, cDestination)) printf("OK\n"); else printf("Error\n");
-
-    printf("Test 3 - ");
-    // Test kopiowania pustego stringa do tablicy zawieraj¹cej innego stringa
-    CopyString(cSource3, cDestination);
-    if (EQUAL == eCompareString(cSource3, cDestination)) printf("OK\n"); else printf("Error\n");
+    // Pusty string
+    CopyString("", cDestination);
+    if (EQUAL == eCompareString("", cDestination)) printf("OK\n"); else printf("Error\n");
 
     printf("\n\n");
 }
@@ -96,34 +79,27 @@ void AppendString ( char pcSourceStr[], char pcDestinationStr[] )
 
 void TestOf_AppendString (void)
 {
-    char cSource1[] = "345";
-    char cDestination1[10] = "012";
-    char cExpected1[] = "012345";
-
-    char cSource2[] = "";
-    char cDestination2[10] = "345";
-    char cExpected2[] = "345";
-
-    char cSource3[] = "012";
-    char cDestination3[10] = "";
-    char cExpected3[] = "012";
+    char cDestination[10];
 
     printf("AppendString\n\n");
 
     printf("Test 1 - ");
-    // Test dopisania stringa do tablicy zawieraj¹cej innego stringa
-    AppendString(cSource1, cDestination1);
-    if (EQUAL == eCompareString(cExpected1, cDestination1)) printf("OK\n"); else printf("Error\n");
+    // Niepusty string do niepustego stringa
+	CopyString("012", cDestination);
+    AppendString("345", cDestination);
+    if (EQUAL == eCompareString("012345", cDestination)) printf("OK\n"); else printf("Error\n");
 
     printf("Test 2 - ");
-    // Test dopisania pustego stringa do tablicy zawieraj¹cej innego stringa
-    AppendString(cSource2, cDestination2);
-    if (EQUAL == eCompareString(cExpected2, cDestination2)) printf("OK\n"); else printf("Error\n");
+    // Pusty string do niepustego stringa
+	CopyString("345", cDestination);
+    AppendString("", cDestination);
+    if (EQUAL == eCompareString("345", cDestination)) printf("OK\n"); else printf("Error\n");
 
     printf("Test 3 - ");
-    // Test dopisania stringa do tablicy zawieraj¹cej pustego stringa
-    AppendString(cSource3, cDestination3);
-    if (EQUAL == eCompareString(cExpected3, cDestination3)) printf("OK\n"); else printf("Error\n");
+    // Niepusty string do pustego stringa
+	CopyString("", cDestination);
+    AppendString("012", cDestination);
+    if (EQUAL == eCompareString("012", cDestination)) printf("OK\n"); else printf("Error\n");
 
     printf("\n\n");
 }
@@ -141,8 +117,8 @@ void ReplaceCharactersInString ( char pcString[], char cOldChar, char cNewChar )
 }
 
 void TestOf_ReplaceCharactersInString (void)
-{
-    char cString1[] = "33_33_33";
+{ //TODO
+    char cString[] = "33_33_33";
     char cOldChar1 = '3';
     char cNewChar1 = 'x';
     char cExpected1[] = "xx_xx_xx";
@@ -166,29 +142,30 @@ void TestOf_ReplaceCharactersInString (void)
 
     printf("Test 1 - ");
     // Test zamiany wielu znaków stringa na inny znak
-    ReplaceCharactersInString(cString1, cOldChar1, cNewChar1);
+	CopyString("33_33_33", cString);
+    ReplaceCharactersInString(cString, '3', 'x');
     if (EQUAL == eCompareString(cExpected1, cString1)) printf("OK\n"); else printf("Error\n");
 
     printf("Test 2 - ");
     // Test zamiany znaku stringa na NULL
-    ReplaceCharactersInString(cString2, cOldChar2, cNewChar2);
+    ReplaceCharactersInString(cString2, cOldChar2, 'x');
     if (EQUAL == eCompareString(cExpected2, cString2)) printf("OK\n"); else printf("Error\n");
 
     printf("Test 3 - ");
     // Test zamiany znaku w stringu niezawieraj¹cym tego znaku
-    ReplaceCharactersInString(cString3, cOldChar3, cNewChar3);
+    ReplaceCharactersInString(cString3, cOldChar3, 'x');
     if (EQUAL == eCompareString(cExpected3, cString3)) printf("OK\n"); else printf("Error\n");
 
     printf("Test 4 - ");
     // Test zamiany znaku w pustym stringu
-    ReplaceCharactersInString(cString4, cOldChar4, cNewChar4);
+    ReplaceCharactersInString(cString4, cOldChar4, 'x');
     if (EQUAL == eCompareString(cExpected4, cString4)) printf("OK\n"); else printf("Error\n");
 
     printf("\n\n");
 }
 
 /********************************************************/
-/*						KONWERSJE						*/
+/*											KONWERSJE												*/
 /********************************************************/
 
 enum Result {OK, ERROR};

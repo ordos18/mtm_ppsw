@@ -128,6 +128,7 @@ char Transmitter_GetCharacterFromBuffer (void) {
 void Transmitter_SendString (char cString[]) {
 	
 	CopyString(cString, sTransmitterBuffer.cData);
+	AppendString("\n", sTransmitterBuffer.cData);
 	U0THR = cString[0];
 	sTransmitterBuffer.fLastCharacter = cString[0];
 	sTransmitterBuffer.eStatus = BUSY;

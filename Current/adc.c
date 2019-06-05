@@ -29,7 +29,7 @@ __irq void ADC_Interrupt (void) {
 		uiADC_max = uiValueADC;
 	}
 	
-	ptrADCInterruptFunction( (uiValueADC-uiADC_min) * 48 / (uiADC_max - uiADC_min) );
+	ptrADCInterruptFunction( (uiValueADC-uiADC_min) * 47 / (uiADC_max - uiADC_min) );
 	
 	
 	VICVectAddr = 0; // Acknowledge Interrupt
