@@ -1,5 +1,6 @@
 #include <LPC21xx.H>
 #include "spi.h"
+#include <math.h>
 
 // PINSEL0 Pin Connect Block
 #define mSPI0_SCK			(1 << 8)
@@ -8,14 +9,55 @@
 #define mSPI0_SSEL		(1 << 14)
 
 #define SPI_CS_bm (1 << 10)
+#define SPI_LSBF_bm (1 << 6)
 #define SPI_MSTR_bm (1 << 5)
 #define SPI_CPHA_bm (1 << 3)
 #define SPI_CPOL_bm (1 << 4)
+#define SPI_MCP4921 0x20
+
+#define SPI_SPIF_bm (1 << 7)
+#define DAC_config 0x3000
+
+#define PI 3.14159265
 
 void DAC_MCP4921_Set (unsigned int uiVoltage) {
 	
-	PINSEL0 = PINSEL0 | (mSPI0_SCK | mSPI0_MISO | mSPI0_MOSI | mSPI0_SSEL);
-	IO1DIR = IO1DIR | SPI_CS_bm;
-	S0SPCR = S0SPCR | (SPI_MSTR_bm | SPI_CPHA_bm | SPI_CPOL_bm);
+	unsigned int uiDataSPI;
 	
+	//initialize
+	PINSEL0 = PINSEL0 | (mSPI0_SCK | mSPI0_MISO | mSPI0_MOSI | mSPI0_SSEL);
+	IO0DIR = IO0DIR | SPI_CS_bm;
+	S0SPCR = SPI_MCP4921;
+	S0SPCCR = 8;
+	
+	//prepare data
+	uiDataSPI = uiVoltage;
+	uiDataSPI = uiDataSPI | DAC_config;
+	
+	//send data
+	IO0CLR = SPI_CS_bm;
+	
+	S0SPDR = (uiDataSPI >> 8) & 0xFF;
+	while ( !(S0SPSR & SPI_SPIF_bm) ) {}
+	
+	S0SPDR = uiDataSPI & 0xFF;
+	while ( !(S0SPSR & SPI_SPIF_bm) ) {}
+	IO0SET = SPI_CS_bm;
+}
+
+void DAC_MCP4921_Set_mV (unsigned int uiVoltage) {
+	
+	float fDACValue;
+	
+	fDACValue = uiVoltage * 4095.0 / 3300.0;
+	DAC_MCP4921_Set(fDACValue);
+}
+
+void DAC_MCP4921_Sine (void) {
+	
+	unsigned int uiIter;
+	
+	for(uiIter = 0; uiIter<360; uiIter++) {
+		DAC_MCP4921_Set_mV(sin(uiIter*PI/180)*1000+1000);
+	}
 }
