@@ -16,8 +16,8 @@
 /**********************************************/
 int main () {
 	
-	unsigned int uiT[360];
-	unsigned int uiIter;
+	unsigned short uiT[360];
+	unsigned short uiIter;
 	/*
 	extern char cOdebranyZnak;
 	extern Token asToken[];
