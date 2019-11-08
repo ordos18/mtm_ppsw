@@ -103,11 +103,73 @@ void Port_MCP23S09_InitCSPin (void) {
 void Port_MCP23S09_Set (unsigned char ucData) {
 	
 	unsigned char ucSPIDataTx[3];
-	struct SPI_TransactionParams sTransactionParams = {ucSPIDataTx, 3, 0, 0, 0, 0};
+	struct SPI_TransactionParams sTransactionParams;
 	
-	ucSPIDataTx[0] = 0x40;
-	ucSPIDataTx[1] = 0x00;
-	ucSPIDataTx[2] = ucData;
-
+	ucSPIDataTx[0] = 0x40;		// OpCode
+	ucSPIDataTx[1] = 0x00;		// Address
+	ucSPIDataTx[2] = 0x00;		// Data
+	sTransactionParams.pucBytesForTx = ucSPIDataTx;
+	sTransactionParams.ucNrOfBytesForTx = 3;
+	sTransactionParams.ucTxBytesOffset = 0;
+	sTransactionParams.pucBytesForRx = 0;
+	sTransactionParams.ucNrOfBytesForRx = 0;
+	sTransactionParams.ucRxBytesOffset = 0;
+	
+	IO0CLR = SPI_CS_MCP23S09_bm;
 	SPI_ExecuteTransaction(sTransactionParams);
+	IO0SET = SPI_CS_MCP23S09_bm;
+	
+	//------------------------//
+
+	ucSPIDataTx[0] = 0x40;		// OpCode
+	ucSPIDataTx[1] = 0x09;		// Address
+	ucSPIDataTx[2] = ucData;	// Data
+	sTransactionParams.pucBytesForTx = ucSPIDataTx;
+	sTransactionParams.ucNrOfBytesForTx = 3;
+	sTransactionParams.ucTxBytesOffset = 0;
+	sTransactionParams.pucBytesForRx = 0;
+	sTransactionParams.ucNrOfBytesForRx = 0;
+	sTransactionParams.ucRxBytesOffset = 0;
+	
+	IO0CLR = SPI_CS_MCP23S09_bm;
+	SPI_ExecuteTransaction(sTransactionParams);
+	IO0SET = SPI_CS_MCP23S09_bm;
+}
+
+unsigned char Port_MCP23S09_Get (void) {
+	
+	unsigned char ucSPIDataTx[3];
+	unsigned char ucSPIDataRx[1];
+	struct SPI_TransactionParams sTransactionParams;
+	
+	ucSPIDataTx[0] = 0x40;		// OpCode
+	ucSPIDataTx[1] = 0x00;		// Address
+	ucSPIDataTx[2] = 0xFF;		// Data
+	sTransactionParams.pucBytesForTx = ucSPIDataTx;
+	sTransactionParams.ucNrOfBytesForTx = 3;
+	sTransactionParams.ucTxBytesOffset = 0;
+	sTransactionParams.pucBytesForRx = 0;
+	sTransactionParams.ucNrOfBytesForRx = 0;
+	sTransactionParams.ucRxBytesOffset = 0;
+	
+	IO0CLR = SPI_CS_MCP23S09_bm;
+	SPI_ExecuteTransaction(sTransactionParams);
+	IO0SET = SPI_CS_MCP23S09_bm;
+	
+	//------------------------//
+	
+	ucSPIDataTx[0] = 0x41;		// OpCode
+	ucSPIDataTx[1] = 0x09;		// Address
+	sTransactionParams.pucBytesForTx = ucSPIDataTx;
+	sTransactionParams.ucNrOfBytesForTx = 2;
+	sTransactionParams.ucTxBytesOffset = 0;
+	sTransactionParams.pucBytesForRx = ucSPIDataRx;
+	sTransactionParams.ucNrOfBytesForRx = 1;
+	sTransactionParams.ucRxBytesOffset = 2;
+	
+	IO0CLR = SPI_CS_MCP23S09_bm;
+	SPI_ExecuteTransaction(sTransactionParams);
+	IO0SET = SPI_CS_MCP23S09_bm;
+
+	return ucSPIDataRx[0];
 }
