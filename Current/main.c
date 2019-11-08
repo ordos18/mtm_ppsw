@@ -45,9 +45,9 @@ int main () {
 	}
 
 	while (1) {
-		//DAC_MCP4921_Sine();
-		for(uiIter = 0; uiIter < 360; uiIter++) {
-			DAC_MCP4921_Set_mV(uiT[uiIter]);
-		}
+		DAC_MCP4921_Sine();
+		//for(uiIter = 0; uiIter < 360; uiIter++) {
+		//	DAC_MCP4921_Set_mV(uiT[uiIter]);
+		//}
 	}
 }
