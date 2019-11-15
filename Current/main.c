@@ -52,11 +52,13 @@ int main () {
 
 	while (1) {
 		//DAC_MCP4921_Sine();
-		//for(uiIter = 0; uiIter < 360; uiIter++) {
-		//	DAC_MCP4921_Set_mV(uiT[uiIter]);
+		//DAC_MCP4921_SineSaw();
+		//for(usIter = 0; usIter < 360; usIter++) {
+		//	DAC_MCP4921_Set_mV(uiT[usIter]);
 		//}
 		//Port_MCP23S09_Set(usBinCounter++);
 		//WaitOnTimer0(100000);
+		
 		
 		if( eReceiver_GetStatus() == READY ) {
 			Receiver_GetStringCopy(RxString);
@@ -84,5 +86,6 @@ int main () {
 				Transmitter_SendString(cStringToSend);
 			}
 		}
+		
 	}
 }

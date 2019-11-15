@@ -64,6 +64,15 @@ void DAC_MCP4921_Sine (void) {
 	}
 }
 
+void DAC_MCP4921_SineSaw (void) {
+	
+	unsigned int uiIter;
+	
+	for(uiIter = 0; uiIter<360; uiIter++) {
+		DAC_MCP4921_Set_mV((PI - 2*(sin(uiIter*PI/180) + 0.5*sin(2*uiIter*PI/180) + 0.33*sin(3*uiIter*PI/180) + 0.25*sin(4*uiIter*PI/180))) *400);
+	}
+}
+
 void SPI_ConfigMaster (struct SPI_FrameParams sFParams) {
 	
 	PINSEL0 = PINSEL0 | (mSPI0_SCK | mSPI0_MISO | mSPI0_MOSI | mSPI0_SSEL);
@@ -73,25 +82,32 @@ void SPI_ConfigMaster (struct SPI_FrameParams sFParams) {
 
 void SPI_ExecuteTransaction (struct SPI_TransactionParams sTParams) {
 	
-	unsigned char ucIterator, ucMaxBytes;
+	unsigned char ucIterator, ucMaxBytes, ucByteTx, ucByteRx;
 	
 	ucMaxBytes = ( (sTParams.ucNrOfBytesForRx+sTParams.ucRxBytesOffset) > (sTParams.ucNrOfBytesForTx+sTParams.ucTxBytesOffset) ) \
 				 ? (sTParams.ucNrOfBytesForRx+sTParams.ucRxBytesOffset) : (sTParams.ucNrOfBytesForTx+sTParams.ucTxBytesOffset);
 	
 	for(ucIterator = 0; ucIterator < ucMaxBytes; ucIterator++) {
 		if( (ucIterator >= sTParams.ucTxBytesOffset) && (ucIterator < (sTParams.ucNrOfBytesForTx+sTParams.ucTxBytesOffset)) ) {
-				S0SPDR = *(sTParams.pucBytesForTx);
+				ucByteTx = *(sTParams.pucBytesForTx);
 				sTParams.pucBytesForTx++;
 		} else {
-				S0SPDR = 0;
+				ucByteTx = 0;
 		}
-		while ( !(S0SPSR & SPI_SPIF_bm) ) {}
+		ucByteRx = ucSPI_ExchangeByte(ucByteTx);
 			
 		if( (ucIterator >= sTParams.ucRxBytesOffset) && (ucIterator < (sTParams.ucNrOfBytesForRx+sTParams.ucRxBytesOffset)) ) {
-				*(sTParams.pucBytesForRx) = S0SPDR;
+				*(sTParams.pucBytesForRx) = ucByteRx;
 				sTParams.pucBytesForRx++;
 		}
 	}
+}
+
+unsigned char ucSPI_ExchangeByte (unsigned char ucByteTx) {
+	
+	S0SPDR = ucByteTx;
+	while ( !(S0SPSR & SPI_SPIF_bm) ) {}
+	return S0SPDR;
 }
 
 void Port_MCP23S09_InitCSPin (void) {
