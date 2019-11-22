@@ -13,6 +13,7 @@
 // VICVectCntlx Vector Control Registers
 #define mIRQ_SLOT_ENABLE 0x00000020
 
+unsigned char I2CAddress, I2CData;
 
 void (*ptrI2CInterruptFunction)(void);
 
@@ -68,4 +69,29 @@ void I2C_Init (void) {
 
 void PCF8574_Write(unsigned char ucData) {
 	
+	I2CAddress = 0x40;
+	I2CData = ucData;
+	I2CONCLR = 0x6C;
+	I2CONSET = 0x40;
+	I2CONSET = 0x20;
+	
+}
+
+void I2C_ExecuteTransaction(struct I2C_Params sTParams) {
+	
+	switch(sTParams.eI2CTransmissionMode) {
+		case TX:
+			// TODO
+			break;
+		case RX:
+			
+			break;
+		case RX_AFTER_TX:
+			
+			break;
+		case TX_AFTER_RX:
+			break;
+		default:
+			break;
+	}
 }

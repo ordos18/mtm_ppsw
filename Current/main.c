@@ -8,6 +8,7 @@
 #include "timer_interrupts.h"
 #include "adc.h"
 #include "spi.h"
+#include "i2c.h"
 #include <math.h>
 
 #define PI 3.14159265
@@ -47,9 +48,11 @@ int main () {
 	}
 	usBinCounter = 0;
 	
-	DAC_MCP4921_Set(1);
-	Port_MCP23S09_InitCSPin();
-
+	//DAC_MCP4921_Set(1);
+	//Port_MCP23S09_InitCSPin();
+	
+	I2C_Init();
+	
 	while (1) {
 		//DAC_MCP4921_Sine();
 		//DAC_MCP4921_SineSaw();
@@ -57,9 +60,11 @@ int main () {
 		//	DAC_MCP4921_Set_mV(uiT[usIter]);
 		//}
 		//Port_MCP23S09_Set(usBinCounter++);
-		//WaitOnTimer0(100000);
 		
+		PCF8574_Write(usBinCounter++);
+		WaitOnTimer0(100000);
 		
+		/*
 		if( eReceiver_GetStatus() == READY ) {
 			Receiver_GetStringCopy(RxString);
 			DecodeMsg(RxString);
@@ -86,6 +91,6 @@ int main () {
 				Transmitter_SendString(cStringToSend);
 			}
 		}
-		
+		*/
 	}
 }
