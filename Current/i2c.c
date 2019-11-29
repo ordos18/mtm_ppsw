@@ -7,6 +7,11 @@
 
 #define mI2C_INTERRUPT 0x08
 
+#define mI2C_INTERRUPT_START 			0x08
+#define mI2C_INTERRUPT_SLA_ACK		0x18
+#define mI2C_INTERRUPT_SLA_NACK		0x20
+#define mI2C_INTERRUPT_DATA_ACK		0x28
+
 // VIC (Vector Interrupt Controller) VICIntEnable
 #define VIC_I2C_CHANNEL_NR 9
 
@@ -21,18 +26,18 @@ void (*ptrI2CInterruptFunction)(void);
 __irq void I2CIRQHandler(void){
 	
 	switch (I2STAT) {
-		case (0x08):						// Start bit
-			I2CONCLR = 0x20;			// Clear start bit
-			I2DAT = I2CAddress;		// Send address and write bit
+		case (mI2C_INTERRUPT_START):
+			I2CONCLR = 0x20;							// Clear start bit
+			I2DAT = I2CAddress;						// Send address and write bit
 			break;
-		case (0x18):						// Slave address +W, ACK
-			I2DAT = I2CData;			// Write data to TX register
+		case (mI2C_INTERRUPT_SLA_ACK):
+			I2DAT = I2CData;							// Write data to TX register
 			break;
-		case (0x20):						// Slave address +W, Not ACK
-			I2DAT = I2CAddress;		// Resend address and write bit
+		case (mI2C_INTERRUPT_SLA_NACK):
+			I2DAT = I2CAddress;						// Resend address and write bit
 			break;
-		case (0x28):						// Data sent, ACK
-			I2CONSET = 0x10;			// Stop condition
+		case (mI2C_INTERRUPT_DATA_ACK):
+			I2CONSET = 0x10;							// Stop condition
 			break;
 		default:
 			break;

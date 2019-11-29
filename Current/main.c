@@ -28,6 +28,7 @@ int main () {
 	char cStringToSend[TRANSMITER_SIZE];
 	char cNewLine[] = "\n";
 	unsigned char fGateStateToSend = 0;
+	enum Direction {LEFT, RIGHT} eDirection = LEFT;
 	/*
 	unsigned int uiReceivedNumber;
 	unsigned char fNumberToCalc = 0;
@@ -46,7 +47,7 @@ int main () {
 	for(usIter = 0; usIter < 360; usIter++) {
 		uiT[usIter] = sin(usIter*PI/180)*1000+1000;
 	}
-	usBinCounter = 0;
+	usBinCounter = 1;
 	
 	//DAC_MCP4921_Set(1);
 	//Port_MCP23S09_InitCSPin();
@@ -61,7 +62,23 @@ int main () {
 		//}
 		//Port_MCP23S09_Set(usBinCounter++);
 		
-		PCF8574_Write(usBinCounter++);
+		//PCF8574_Write(usBinCounter++);
+	  
+		if(eDirection == LEFT) {
+			usBinCounter = usBinCounter << 1;
+		}
+		else {
+			usBinCounter = usBinCounter >> 1;
+		}
+		
+		if(usBinCounter == 0x80) {
+			eDirection = RIGHT;
+		}
+		else if(usBinCounter == 0x01) {
+			eDirection = LEFT;
+		}
+		
+		PCF8574_Write(usBinCounter);
 		WaitOnTimer0(100000);
 		
 		/*
