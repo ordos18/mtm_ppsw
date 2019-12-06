@@ -11,8 +11,8 @@ struct Keyword asKeywordList[MAX_KEYWORD_NR] =
 {
 	{CAL,  "callib"},
 	{GOTO, "goto"  },
-	{SPI_G, "spi_port_get"  },
-	{SPI_S,	"spi_port_set"		 }
+	{I2C_R, "portrd"  },
+	{I2C_W,	"portwr"		 }
 };
 
 unsigned char ucFindTokensInString (char *pcString)

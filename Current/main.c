@@ -14,6 +14,7 @@
 #define PI 3.14159265
 
 
+
 /**********************************************/
 int main () {
 	
@@ -23,6 +24,7 @@ int main () {
 	extern Token asToken[];
 	extern unsigned char ucTokenNr;
 	extern struct Watch sWatch;
+	extern unsigned char ucPCF8574;
 	
 	char RxString[RECEIVER_SIZE];
 	char cStringToSend[TRANSMITER_SIZE];
@@ -64,6 +66,9 @@ int main () {
 		
 		//PCF8574_Write(usBinCounter++);
 	  
+		
+		/*
+		// Knight Rider
 		if(eDirection == LEFT) {
 			usBinCounter = usBinCounter << 1;
 		}
@@ -80,20 +85,22 @@ int main () {
 		
 		PCF8574_Write(usBinCounter);
 		WaitOnTimer0(100000);
+		*/
 		
-		/*
+		
+		// Terminal
 		if( eReceiver_GetStatus() == READY ) {
 			Receiver_GetStringCopy(RxString);
 			DecodeMsg(RxString);
 			
 			if( (ucTokenNr > 0) && (asToken[0].eType == KEYWORD) ) {
 				switch(asToken[0].uValue.eKeyword) {
-					case SPI_S:
+					case I2C_W:
 						if (ucTokenNr > 1) {
-							Port_MCP23S09_Set(asToken[1].uValue.uiNumber);
+							PCF8574_Write(asToken[1].uValue.uiNumber);
 						}
 						break;
-					case SPI_G:
+					case I2C_R:
 						fGateStateToSend = 1;
 						break;
 					default: {}
@@ -103,11 +110,12 @@ int main () {
 		if (FREE == eTransmitter_GetStatus()) {
 			if (1 == fGateStateToSend) {
 				fGateStateToSend = 0;
+				PCF8574_Read();
 				CopyString(cNewLine, cStringToSend);
-				AppendUIntToString(Port_MCP23S09_Get(), cStringToSend);
+				AppendUIntToString(ucPCF8574, cStringToSend);
 				Transmitter_SendString(cStringToSend);
 			}
 		}
-		*/
+		
 	}
 }

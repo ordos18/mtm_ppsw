@@ -17,14 +17,20 @@
 #define mI2C_INTERRUPT_DATA_RX_ACK		0x50
 #define mI2C_INTERRUPT_DATA_RX_NACK		0x58
 
+#define mI2C_START										0x20
+#define mI2C_STOP											0x10
+#define mI2C_ACK											0x04
+#define mI2C_I2EN											0x40
+
 // VIC (Vector Interrupt Controller) VICIntEnable
 #define VIC_I2C_CHANNEL_NR 9
 
 // VICVectCntlx Vector Control Registers
 #define mIRQ_SLOT_ENABLE 0x00000020
 
-unsigned char I2CAddress, I2CDataTx, I2CDataRx, I2CDone;
+unsigned char ucByteCounter;
 struct I2C_Params sI2C_Params;
+unsigned char ucPCF8574;
 
 void (*ptrI2CInterruptFunction)(void);
 
@@ -33,33 +39,43 @@ __irq void I2CIRQHandler (void){
 	
 	switch (I2STAT) {
 		case (mI2C_INTERRUPT_START):
-			I2CONCLR = 0x20;							// Clear start bit
-			I2DAT = I2CAddress;						// Send address and write bit
+			I2CONCLR = mI2C_START;				// Clear start bit
+			I2DAT = sI2C_Params.ucSlaveAddress;						// Send address and write bit
+			ucByteCounter = 0;
 			break;
 		case (mI2C_INTERRUPT_SLA_W_ACK):
-			I2DAT = I2CDataTx;							// Write data to TX register
+			I2DAT = *sI2C_Params.pucBytesForTx;							// Write data to TX register
+			ucByteCounter++;
 			break;
 		case (mI2C_INTERRUPT_SLA_W_NACK):
-			I2DAT = I2CAddress;						// Resend address and write bit
+			I2DAT = sI2C_Params.ucSlaveAddress;						// Resend address and write bit
 			break;
 		case (mI2C_INTERRUPT_DATA_TX_ACK):
-			I2CONSET = 0x10;							// Stop condition
-			I2CDone = 1;
+			if (sI2C_Params.ucNrOfBytesForTx > ucByteCounter) {
+				I2DAT = *(sI2C_Params.pucBytesForTx + ucByteCounter++);
+			} else {
+				I2CONSET = mI2C_STOP;					// Stop condition
+				sI2C_Params.ucDone = 1;
+			}
 			break;
 		
 		case (mI2C_INTERRUPT_SLA_R_ACK):
-			I2CONSET = 0x04;							// Enable ACK for data byte
+			I2CONSET = mI2C_ACK;					// Enable ACK for data byte
 			break;
 		case (mI2C_INTERRUPT_SLA_R_NACK):
-			I2CONSET = 0x20;							// Resend Start condition
+			I2CONSET = mI2C_START;				// Resend Start condition
 			break;
 		case (mI2C_INTERRUPT_DATA_RX_ACK):
-			I2CDataRx = I2DAT;
-			I2CONSET = 0x10;							// Stop condition
-			I2CDone = 1;
+			if (sI2C_Params.ucNrOfBytesForRx > ucByteCounter - 1) {
+				*(sI2C_Params.pucBytesForRx + ucByteCounter++) = I2DAT;
+			} else {
+				I2CONCLR = mI2C_ACK;
+			}
 			break;
 		case (mI2C_INTERRUPT_DATA_RX_NACK):
-			I2CONSET = 0x20;							// Resend Start condition
+			*(sI2C_Params.pucBytesForRx + ucByteCounter++) = I2DAT;
+			I2CONSET = mI2C_STOP;					// Stop condition
+			sI2C_Params.ucDone = 1;
 			break;
 		default:
 			break;
@@ -99,59 +115,15 @@ void I2C_Init (void) {
 void I2C_Start (void) {
 	
 	I2CONCLR = 0x6C;
-	I2CONSET = 0x40;
-	I2CONSET = 0x20;
+	I2CONSET = mI2C_I2EN;
+	I2CONSET = mI2C_START;
 }
 
 void I2C_ExecuteTransaction (void) {
 	
-	unsigned char ucIterator;
-	
 	sI2C_Params.ucDone = 0;
-	I2CAddress = sI2C_Params.ucSlaveAddress;
-	
-	switch(sI2C_Params.eI2CTransmissionMode) {
-		case TX:
-			for(ucIterator = 0; ucIterator < sI2C_Params.ucNrOfBytesForTx; ucIterator++) {
-				I2C_Start();
-				I2CDataTx = *(sI2C_Params.pucBytesForTx);
-				sI2C_Params.pucBytesForTx++;
-				while(I2CDone != 1) {}
-				I2CDone = 0;
-			}
-			break;
-		case RX:
-			for(ucIterator = 0; ucIterator < sI2C_Params.ucNrOfBytesForRx; ucIterator++) {
-				I2C_Start();
-				*(sI2C_Params.pucBytesForRx) = I2CDataRx;
-				sI2C_Params.pucBytesForRx++;
-				while(I2CDone != 1) {}
-				I2CDone = 0;
-			}
-			break;
-		case RX_AFTER_TX:
-			for(ucIterator = 0; ucIterator < sI2C_Params.ucNrOfBytesForTx; ucIterator++) {
-				I2C_Start();
-				I2CDataTx = *(sI2C_Params.pucBytesForTx);
-				sI2C_Params.pucBytesForTx++;
-				while(I2CDone != 1) {}
-				I2CDone = 0;
-			}
-			for(ucIterator = 0; ucIterator < sI2C_Params.ucNrOfBytesForRx; ucIterator++) {
-				I2C_Start();
-				*(sI2C_Params.pucBytesForRx) = I2CDataRx;
-				sI2C_Params.pucBytesForRx++;
-				while(I2CDone != 1) {}
-				I2CDone = 0;
-			}
-			break;
-		case TX_AFTER_RX:
-			break;
-		default:
-			break;
-	}
-	
-	
+	I2C_Start();
+	while(sI2C_Params.ucDone != 1) {}
 }
 
 void PCF8574_Write (unsigned char ucData) {
@@ -172,7 +144,7 @@ void PCF8574_Read (void) {
 	sI2C_Params.ucSlaveAddress = 0x41;
 	sI2C_Params.pucBytesForTx = 0;
 	sI2C_Params.ucNrOfBytesForTx = 0;
-	sI2C_Params.pucBytesForRx = 0;
+	sI2C_Params.pucBytesForRx = &ucPCF8574;
 	sI2C_Params.ucNrOfBytesForRx = 1;
 	
 	I2C_ExecuteTransaction();

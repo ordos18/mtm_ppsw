@@ -17,3 +17,4 @@ struct I2C_Params {
 
 void I2C_Init (void);
 void PCF8574_Write(unsigned char ucData);
+void PCF8574_Read (void);
