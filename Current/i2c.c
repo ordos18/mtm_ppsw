@@ -30,7 +30,8 @@
 
 unsigned char ucByteCounter;
 struct I2C_Params sI2C_Params;
-unsigned char ucPCF8574;
+unsigned char ucPCF8574_Input, ucMC24LC64_Input;
+unsigned char ucI2CData[3];
 
 void (*ptrI2CInterruptFunction)(void);
 
@@ -60,14 +61,20 @@ __irq void I2CIRQHandler (void){
 			break;
 		
 		case (mI2C_INTERRUPT_SLA_R_ACK):
-			I2CONSET = mI2C_ACK;					// Enable ACK for data byte
+			if (sI2C_Params.ucNrOfBytesForRx > ucByteCounter + 1) {
+				*(sI2C_Params.pucBytesForRx + ucByteCounter++) = I2DAT;
+				I2CONSET = mI2C_ACK;
+			} else {
+				I2CONCLR = mI2C_ACK;
+			}
 			break;
 		case (mI2C_INTERRUPT_SLA_R_NACK):
 			I2CONSET = mI2C_START;				// Resend Start condition
 			break;
 		case (mI2C_INTERRUPT_DATA_RX_ACK):
-			if (sI2C_Params.ucNrOfBytesForRx > ucByteCounter - 1) {
+			if (sI2C_Params.ucNrOfBytesForRx > ucByteCounter + 1) {
 				*(sI2C_Params.pucBytesForRx + ucByteCounter++) = I2DAT;
+				I2CONSET = mI2C_ACK;
 			} else {
 				I2CONCLR = mI2C_ACK;
 			}
@@ -144,7 +151,38 @@ void PCF8574_Read (void) {
 	sI2C_Params.ucSlaveAddress = 0x41;
 	sI2C_Params.pucBytesForTx = 0;
 	sI2C_Params.ucNrOfBytesForTx = 0;
-	sI2C_Params.pucBytesForRx = &ucPCF8574;
+	sI2C_Params.pucBytesForRx = &ucPCF8574_Input;
+	sI2C_Params.ucNrOfBytesForRx = 1;
+	
+	I2C_ExecuteTransaction();
+}
+
+void MC24LC64_ByteWrite (unsigned int WordAddress, unsigned char Data) {
+	
+	ucI2CData[0] = 0x00FF & WordAddress;
+	ucI2CData[1] = 0x00FF & (WordAddress >> 8);
+	ucI2CData[2] = Data;
+	
+	sI2C_Params.eI2CTransmissionMode = TX;
+	sI2C_Params.ucSlaveAddress = 0xA0;
+	sI2C_Params.pucBytesForTx = ucI2CData;
+	sI2C_Params.ucNrOfBytesForTx = 3;
+	sI2C_Params.pucBytesForRx = 0;
+	sI2C_Params.ucNrOfBytesForRx = 0;
+	
+	I2C_ExecuteTransaction();
+}
+
+void MC24LC64_RandomRead (unsigned int WordAddress) {
+	
+	ucI2CData[0] = 0x00FF & WordAddress;
+	ucI2CData[1] = 0x00FF & (WordAddress >> 8);
+	
+	sI2C_Params.eI2CTransmissionMode = RX;
+	sI2C_Params.ucSlaveAddress = 0xA1;
+	sI2C_Params.pucBytesForTx = ucI2CData;
+	sI2C_Params.ucNrOfBytesForTx = 2;
+	sI2C_Params.pucBytesForRx = &ucMC24LC64_Input;
 	sI2C_Params.ucNrOfBytesForRx = 1;
 	
 	I2C_ExecuteTransaction();

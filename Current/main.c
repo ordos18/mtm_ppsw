@@ -24,7 +24,7 @@ int main () {
 	extern Token asToken[];
 	extern unsigned char ucTokenNr;
 	extern struct Watch sWatch;
-	extern unsigned char ucPCF8574;
+	extern unsigned char ucPCF8574_Input, ucMC24LC64_Input;
 	
 	char RxString[RECEIVER_SIZE];
 	char cStringToSend[TRANSMITER_SIZE];
@@ -103,6 +103,14 @@ int main () {
 					case I2C_R:
 						fGateStateToSend = 1;
 						break;
+					case I2C_MW:
+						if (ucTokenNr > 1) {
+							PCF8574_Write(asToken[1].uValue.uiNumber);
+						}
+						break;
+					case I2C_MR:
+						fGateStateToSend = 1;
+						break;
 					default: {}
 				}
 			}
@@ -112,7 +120,7 @@ int main () {
 				fGateStateToSend = 0;
 				PCF8574_Read();
 				CopyString(cNewLine, cStringToSend);
-				AppendUIntToString(ucPCF8574, cStringToSend);
+				AppendUIntToString(ucPCF8574_Input, cStringToSend);
 				Transmitter_SendString(cStringToSend);
 			}
 		}

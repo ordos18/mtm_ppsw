@@ -9,10 +9,10 @@ unsigned char ucTokenNr;
 
 struct Keyword asKeywordList[MAX_KEYWORD_NR] =
 {
-	{CAL,  "callib"},
-	{GOTO, "goto"  },
 	{I2C_R, "portrd"  },
-	{I2C_W,	"portwr"		 }
+	{I2C_W,	"portwr"	},
+	{I2C_MR,	"memrd"	},
+	{I2C_MW,	"memwr"	}
 };
 
 unsigned char ucFindTokensInString (char *pcString)

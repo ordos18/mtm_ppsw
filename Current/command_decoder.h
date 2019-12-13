@@ -2,7 +2,7 @@
 #define MAX_KEYWORD_STRING_LTH 20 // maksymalna dlugosc komendy
 #define MAX_KEYWORD_NR 4
 
-typedef enum KeywordCode {CAL, GOTO, I2C_R, I2C_W} KeywordCode;
+typedef enum KeywordCode {I2C_R, I2C_W, I2C_MR, I2C_MW} KeywordCode;
 
 typedef union TokenValue {
 	enum KeywordCode	eKeyword; // jezeli KEYWORD
