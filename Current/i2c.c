@@ -128,9 +128,19 @@ void I2C_Start (void) {
 
 void I2C_ExecuteTransaction (void) {
 	
-	sI2C_Params.ucDone = 0;
-	I2C_Start();
-	while(sI2C_Params.ucDone != 1) {}
+	if (sI2C_Params.eI2CTransmissionMode == TX || sI2C_Params.eI2CTransmissionMode == RX_AFTER_TX) {
+		sI2C_Params.ucDone = 0;
+		sI2C_Params.ucSlaveAddress = sI2C_Params.ucSlaveAddress & ~(0x01);
+		I2C_Start();
+		while(sI2C_Params.ucDone != 1) {}
+	}
+	
+	if (sI2C_Params.eI2CTransmissionMode == RX || sI2C_Params.eI2CTransmissionMode == RX_AFTER_TX) {
+		sI2C_Params.ucDone = 0;
+		sI2C_Params.ucSlaveAddress = sI2C_Params.ucSlaveAddress | 0x01;
+		I2C_Start();
+		while(sI2C_Params.ucDone != 1) {}
+	}
 }
 
 void PCF8574_Write (unsigned char ucData) {
@@ -148,7 +158,7 @@ void PCF8574_Write (unsigned char ucData) {
 void PCF8574_Read (void) {
 	
 	sI2C_Params.eI2CTransmissionMode = RX;
-	sI2C_Params.ucSlaveAddress = 0x41;
+	sI2C_Params.ucSlaveAddress = 0x40;
 	sI2C_Params.pucBytesForTx = 0;
 	sI2C_Params.ucNrOfBytesForTx = 0;
 	sI2C_Params.pucBytesForRx = &ucPCF8574_Input;
@@ -178,8 +188,8 @@ void MC24LC64_RandomRead (unsigned int WordAddress) {
 	ucI2CData[0] = 0x00FF & WordAddress;
 	ucI2CData[1] = 0x00FF & (WordAddress >> 8);
 	
-	sI2C_Params.eI2CTransmissionMode = RX;
-	sI2C_Params.ucSlaveAddress = 0xA1;
+	sI2C_Params.eI2CTransmissionMode = RX_AFTER_TX;
+	sI2C_Params.ucSlaveAddress = 0xA0;
 	sI2C_Params.pucBytesForTx = ucI2CData;
 	sI2C_Params.ucNrOfBytesForTx = 2;
 	sI2C_Params.pucBytesForRx = &ucMC24LC64_Input;

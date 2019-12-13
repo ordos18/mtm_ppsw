@@ -29,7 +29,7 @@ int main () {
 	char RxString[RECEIVER_SIZE];
 	char cStringToSend[TRANSMITER_SIZE];
 	char cNewLine[] = "\n";
-	unsigned char fGateStateToSend = 0;
+	unsigned char fGateStateToSend = 0, fMemoryValueToSend = 0;
 	enum Direction {LEFT, RIGHT} eDirection = LEFT;
 	/*
 	unsigned int uiReceivedNumber;
@@ -104,12 +104,12 @@ int main () {
 						fGateStateToSend = 1;
 						break;
 					case I2C_MW:
-						if (ucTokenNr > 1) {
-							PCF8574_Write(asToken[1].uValue.uiNumber);
+						if (ucTokenNr > 2) {
+							MC24LC64_ByteWrite(asToken[1].uValue.uiNumber, asToken[2].uValue.uiNumber);
 						}
 						break;
 					case I2C_MR:
-						fGateStateToSend = 1;
+						fMemoryValueToSend = 1;
 						break;
 					default: {}
 				}
@@ -121,6 +121,13 @@ int main () {
 				PCF8574_Read();
 				CopyString(cNewLine, cStringToSend);
 				AppendUIntToString(ucPCF8574_Input, cStringToSend);
+				Transmitter_SendString(cStringToSend);
+			}
+			if (1 == fMemoryValueToSend) {
+				fMemoryValueToSend = 0;
+				MC24LC64_RandomRead(asToken[1].uValue.uiNumber);
+				CopyString(cNewLine, cStringToSend);
+				AppendUIntToString(ucMC24LC64_Input, cStringToSend);
 				Transmitter_SendString(cStringToSend);
 			}
 		}
