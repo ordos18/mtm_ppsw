@@ -56,6 +56,7 @@ int main () {
 	
 	I2C_Init();
 	
+	
 	while (1) {
 		//DAC_MCP4921_Sine();
 		//DAC_MCP4921_SineSaw();
@@ -101,6 +102,7 @@ int main () {
 						}
 						break;
 					case I2C_R:
+						PCF8574_Read();
 						fGateStateToSend = 1;
 						break;
 					case I2C_MW:
@@ -109,6 +111,9 @@ int main () {
 						}
 						break;
 					case I2C_MR:
+						MC24LC64_RandomRead(asToken[1].uValue.uiNumber);
+						//while(ucI2C_CheckState() != 1) {}
+						//MC24LC64_RandomRead(asToken[1].uValue.uiNumber+1);
 						fMemoryValueToSend = 1;
 						break;
 					default: {}
@@ -116,16 +121,14 @@ int main () {
 			}
 		}
 		if (FREE == eTransmitter_GetStatus()) {
-			if (1 == fGateStateToSend) {
+			if (1 == fGateStateToSend && 1 == ucI2C_CheckState()) {
 				fGateStateToSend = 0;
-				PCF8574_Read();
 				CopyString(cNewLine, cStringToSend);
 				AppendUIntToString(ucPCF8574_Input, cStringToSend);
 				Transmitter_SendString(cStringToSend);
 			}
-			if (1 == fMemoryValueToSend) {
+			if (1 == fMemoryValueToSend && 1 == ucI2C_CheckState()) {
 				fMemoryValueToSend = 0;
-				MC24LC64_RandomRead(asToken[1].uValue.uiNumber);
 				CopyString(cNewLine, cStringToSend);
 				AppendUIntToString(ucMC24LC64_Input, cStringToSend);
 				Transmitter_SendString(cStringToSend);
